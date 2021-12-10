@@ -1,0 +1,79 @@
+﻿country,participated,matches,wins,draws,losses,GF,GA,points,honors,champions
+Brazil,21,109,73,18,18,229,105,237,9,TRUE
+Germany,19,109,67,20,22,226,125,221,12,TRUE
+Italy,18,83,45,21,17,128,77,156,7,TRUE
+Argentina,17,81,43,15,23,137,93,144,5,TRUE
+France,15,66,34,13,19,120,77,115,4,TRUE
+England,15,69,29,21,19,91,64,108,1,TRUE
+Spain,15,63,30,15,18,99,72,105,1,TRUE
+Netherlands,10,50,27,12,11,86,48,93,4,FALSE
+Uruguay,13,56,24,12,20,87,74,84,2,TRUE
+Sweden,12,51,19,13,19,80,73,70,3,FALSE
+Belgium,13,48,20,9,19,68,72,69,1,FALSE
+Russia,11,45,19,10,16,77,54,67,0,FALSE
+Serbia,12,46,18,8,20,66,63,62,0,FALSE
+Mexico,16,57,16,14,27,60,98,62,0,FALSE
+Poland,8,34,16,5,13,46,45,53,1,FALSE
+Hungary,9,32,15,3,14,87,57,48,2,FALSE
+Portugal,7,30,14,6,10,49,35,48,1,FALSE
+Switzerland,11,37,12,8,17,50,64,44,0,FALSE
+Czech Republic,9,33,12,5,16,47,49,41,0,FALSE
+Austria,7,29,12,4,13,43,47,40,1,FALSE
+Chile,9,33,11,7,15,40,49,40,1,FALSE
+Croatia,5,23,11,4,8,35,26,37,2,FALSE
+Denmark,5,20,9,5,6,30,26,32,0,FALSE
+Paraguay,8,27,7,10,10,30,38,31,0,FALSE
+Colombia,6,22,9,3,10,32,30,30,0,FALSE
+United States,10,33,8,6,19,37,62,30,1,FALSE
+Romania,7,21,8,5,8,30,32,29,0,FALSE
+South Korea,10,34,6,9,19,34,70,27,0,FALSE
+Nigeria,6,21,6,3,12,23,30,21,0,FALSE
+Japan,6,21,5,5,11,20,29,20,0,FALSE
+Costa Rica,5,18,5,5,8,19,28,20,0,FALSE
+Scotland,8,23,4,7,12,25,41,19,0,FALSE
+Cameroon,7,23,4,7,12,18,43,19,0,FALSE
+Peru,5,18,5,3,10,21,33,18,0,FALSE
+Bulgaria,7,26,3,8,15,22,53,17,0,FALSE
+Turkey,2,10,5,1,4,20,17,16,1,FALSE
+Ghana,3,12,4,3,5,13,16,15,0,FALSE
+Republic of Ireland,3,13,2,8,3,10,10,14,0,FALSE
+Northern Ireland,3,13,3,5,5,13,23,14,0,FALSE
+Ecuador,3,10,4,1,5,10,11,13,0,FALSE
+Senegal,2,8,3,3,2,11,10,12,0,FALSE
+Algeria,4,13,3,3,7,13,19,12,0,FALSE
+Morocco,5,16,2,5,9,14,22,11,0,FALSE
+Saudi Arabia,5,16,3,2,11,11,39,11,0,FALSE
+Ivory Coast,3,9,3,1,5,13,14,10,0,FALSE
+South Africa,3,9,2,4,3,11,16,10,0,FALSE
+Tunisia,5,15,2,4,9,13,25,10,0,FALSE
+Iran,5,15,2,4,9,9,24,10,0,FALSE
+Australia,5,16,2,4,10,13,31,10,0,FALSE
+Norway,3,8,2,3,3,7,8,9,0,FALSE
+Greece,3,10,2,2,6,5,20,8,0,FALSE
+Ukraine,1,5,2,1,2,5,7,7,0,FALSE
+Wales,1,5,1,3,1,4,4,6,0,FALSE
+Slovakia,1,4,1,1,2,5,7,4,0,FALSE
+Slovenia,2,6,1,1,4,5,10,4,0,FALSE
+Cuba,1,3,1,1,1,5,12,4,0,FALSE
+North Korea,2,7,1,1,5,6,21,4,0,FALSE
+Bosnia-Herzegovina,1,3,1,0,2,4,4,3,0,FALSE
+Jamaica,1,3,1,0,2,3,9,3,0,FALSE
+New Zealand,2,6,0,3,3,4,14,3,0,FALSE
+Honduras,3,9,0,3,6,3,14,3,0,FALSE
+Angola,1,3,0,2,1,1,2,2,0,FALSE
+Israel,1,3,0,2,1,1,3,2,0,FALSE
+Egypt,3,7,0,2,5,5,12,2,0,FALSE
+Iceland,1,3,0,1,2,2,5,1,0,FALSE
+Kuwait,1,3,0,1,2,2,6,1,0,FALSE
+Trinidad & Tobago,1,3,0,1,2,0,4,1,0,FALSE
+Bolivia,3,6,0,1,5,1,20,1,0,FALSE
+Iraq,1,3,0,0,3,1,4,0,0,FALSE
+Togo,1,3,0,0,3,1,6,0,0,FALSE
+Canada,1,3,0,0,3,0,5,0,0,FALSE
+Indonesia,1,1,0,0,1,0,6,0,0,FALSE
+Panama,1,3,0,0,3,2,11,0,0,FALSE
+United Arab Emirates,1,3,0,0,3,2,11,0,0,FALSE
+China,1,3,0,0,3,0,9,0,0,FALSE
+Haiti,1,3,0,0,3,2,14,0,0,FALSE
+Congo DR,1,3,0,0,3,0,14,0,0,FALSE
+El Salvador,2,6,0,0,6,1,22,0,0,FALSE

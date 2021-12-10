@@ -46,19 +46,19 @@ class_diag <- function(score, truth, positive, cutoff=.5){
 
 # Mining, Classification, Prediction
 
-## Name and EID here
+## Sebastian Granada sg46324
 
 ### Introduction 
 
-Paragraph or two introducing your datasets and variables, why they are interesting to you, etc. See instructions for more information
+  *While soccer is played mostly on the weekends, being a fan is an everyday task. Every morning I wake up to a plethora of soccer news to catch up on and the arsenal of information only increases as the day progresses. One my favoritie parts about soccer are international play between different countries. The biggest competition for this is the FIFA World Cup.*
+  
+  *The dataset I will be assessing today is a deeper dive into the WorldCupRecords dataset I looked at in project1. Here, the dataset is creatively called WorldCupRecords2 and adds on a new, binary, variable saying if the country has ever been crowned World Cup Champion. To reiterate the rest of the variables of this dataset include times participated, matches played, wins, draws, losses, goals scored/conceded, points accumulated, and number of honors received for every country who have competed in the World Cup since 1930. This is a dataset I created using the records provided by FIFA with in-depth information surrounding every World Cup since 1930. In total there are 78 observations or countries that have participated in this competition. In addition there are only 8 countries who have won the competition leaving 70 participants with second place finishes at best.*
 
 ```{R}
 library(tidyverse)
 # read your datasets in here, e.g., with read_csv()
-
 # if your dataset needs tidying, do so here
-
-# any other code here
+WorldCupRecords2 <- read_csv("~/WorldCupRecords2.csv")
 ```
 
 ### Cluster Analysis
@@ -66,68 +66,225 @@ library(tidyverse)
 ```{R}
 library(cluster)
 # clustering code here
+pam1 <- WorldCupRecords2 %>% pam(k=3)
+pam1$silinfo$avg.width
+plot(pam1,which=2)
+
+library(GGally)
+WorldCupRecords2 %>% mutate(cluster=as.factor(pam1$clustering)) %>% filter(champions == "TRUE") %>% ggpairs(cols=4:8,aes(color=cluster))
 ```
 
 Discussion of clustering here
+*After plotting the average silhouette widths it is evident that the correct number of clusters is k=3. This gives an average silhouette width of 0.74 which suggests a strong structure has been found being greater than 0.71. After assessing the visualizatiion of the clusters, some standout correlations are a significantly positive relationship between winning and GF, goals for, as one would expect. However, what wasn't expected is the significanly positive correlation between winning and GA, goals against. While the correlation between wins and GA isn't as high as GF, it is still interesting that getting scored on has a positive correlation with winning with only a slighlty positive, insignificant, correlation with losing. Perhaps teams that win still score more but because they are prolific in scoring they leave their defense open to counter attacks and inevitably goals conceded.*
     
     
 ### Dimensionality Reduction with PCA
 
 ```{R}
 # PCA code here
+WorldCupRecords21 <- WorldCupRecords2 %>% select(-participated,-matches,-honors,-champions)
+WorldCupRecords2nums <- WorldCupRecords21 %>% select_if(is.numeric)
+rownames(WorldCupRecords2nums) <- WorldCupRecords21$country
+princomp(WorldCupRecords2nums) -> pca1
+names(pca1)
+
+summary(pca1, loadings=T)
+
+#plot PC1 vs PC2
+WorldCupRecords2df <- data.frame(country=WorldCupRecords21$country, PC1=pca1$scores[,1], PC2=pca1$scores[,2])
+ggplot(WorldCupRecords2df, aes(PC1, PC2)) + geom_point()
+
+#variance by PC1 and PC2
+pca1$sdev
 ```
 
-Discussions of PCA here. 
+Discussions of PCA here.
+*After making the PCA, PC1 is a GF (goals for) and GA (goals against) vs. winning axis and PC2 is a GF and GA vs. losing axis. The higher scores on PC1 mean higher winning. Higher scores on PC2 however in regards to GF means lower losing but in regards to GA means higher losing. This makes sense as scoring goals helps teams win but conceding goals brings a higher likelihood of a loss. Lastly, futher assesment of the PCA shows that PC1 accounts for about 71.3% of the total variance in the data whereas PC2 accounts for about 13.1%.*
 
 ###  Linear Classifier
 
 ```{R}
 # linear classifier code here
+#Predict champions from GF using logistic regression
+
+#Get all of numeric variables
+#First, make champions a numeric by assigning TRUE==1 and FALSE==0
+WorldCupRecords2champsint <- WorldCupRecords2
+WorldCupRecords2champsint$champInt <- as.integer(WorldCupRecords2champsint$champions)
+WorldCupRecords2numsFULL <- WorldCupRecords2champsint %>% select_if(is.numeric)
+
+#Logistic regression from ALL numeric variables
+glm(champInt~.,data=WorldCupRecords2numsFULL)
+coef(glm(champInt~.,data=WorldCupRecords2numsFULL))
+
+#Fit entire dataset and get predictions for all observations
+fit <- glm(champInt~.,data=WorldCupRecords2numsFULL)
+score <- predict(fit)
+score %>% round(3)
+
+#Get AUC
+class_diag <- function(score, truth, positive, cutoff=.5){
+
+  pred <- factor(score>cutoff,levels=c("TRUE","FALSE"))
+  truth <- factor(truth==positive, levels=c("TRUE","FALSE"))
+
+  tab<-table(truth, pred)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[1,1]/rowSums(tab)[1]
+  spec=tab[2,2]/rowSums(tab)[2]
+  ppv=tab[1,1]/colSums(tab)[1]
+
+#CALCULATE F1
+  f1=2*(sens*ppv)/(sens+ppv)
+  
+#CALCULATE EXACT AUC
+  truth<-as.numeric(truth=="TRUE")
+  ord<-order(score, decreasing=TRUE)
+  score <- score[ord]; truth <- truth[ord]
+  TPR=cumsum(truth)/max(1,sum(truth))
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  dup<-c(score[-1]>=score[-length(score)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+  round(data.frame(acc,sens,spec,ppv,f1,ba=(sens+spec)/2,auc, row.names = "Metrics"),4)
+}
+class_diag(score,truth=WorldCupRecords2numsFULL$champInt,positive=1)
+
+#Confusion matrix
+y <- WorldCupRecords2$champions
+y_hat <- sample(c("True","False"),size=length(y),replace=T)
+
+y_hat <- factor(y_hat, levels=c("True","False"))
+table(actual=y,predicted=y_hat) %>% addmargins
+TNR <- 30/70
+TNR
+TPR <- 5/8
+TPR
+FNR <- 1-TPR
+FNR
 ```
 
 ```{R}
 # cross-validation of linear classifier here
+set.seed(322)
+k=10
+data<-sample_frac(WorldCupRecords2numsFULL)
+folds <- rep(1:k, length.out=nrow(data)) 
+
+diags<-NULL
+i=1
+for(i in 1:k){
+# create training and test sets
+train<-data[folds!=i,] 
+test<-data[folds==i,] 
+truth<-test$champInt
+
+# train model
+fit <-glm(champInt~.,data=train,family="binomial")
+# test model
+probs <- predict(fit,newdata=test,type="response")
+
+# get performance metrics for each fold
+diags<-rbind(diags,class_diag(probs,truth,positive = 1)) }
+summarize_all(diags,mean)
 ```
 
 Discussion here
+  *Before cross-validating, I performed a logistic regression to predict championship from all other numeric variables. Also, after running class_diag we see the AUC of this as 0.9964. This AUC shows that logistic regression is a great model for performing AUC as it is above 0.9. Looking at the confusion matrix, there is are true negative, true positive, and false positive rates of 0.43, 0.63, and 0.38 respectively.*
+  *After performing a k-fold CV, k=10, on this same model the AUC decreased to 0.56 making this a bad model for performing AUC which is worse than the AUC for the logistic regression. Since the AUC significantly decreases here after the cross-validation this serves as a sign of overfitting.*
 
 ### Non-Parametric Classifier
 
 ```{R}
 library(caret)
-# non-parametric classifier code here
+#fit kNN
+knn_fit <- knn3(factor(champInt==1,levels=c("TRUE","FALSE")) ~., data=WorldCupRecords2numsFULL, k=10)
+
+#Get predictions for all observations
+y_hat_knn <- predict(knn_fit,WorldCupRecords2numsFULL)
+
+#Run the class_diag
+class_diag(y_hat_knn[,1], WorldCupRecords2numsFULL$champInt, positive=1)
 ```
 
 ```{R}
 # cross-validation of np classifier here
+set.seed(1234)
+k=10
+data<-WorldCupRecords2numsFULL[sample(nrow(WorldCupRecords2numsFULL)),]
+folds <- cut(seq(1:nrow(WorldCupRecords2numsFULL)),breaks=k,labels=F)
+diags<-NULL
+for(i in 1:k){
+  # create training and test sets
+  train<-data[folds!=i,] 
+  test<-data[folds==i,] 
+  truth<-test$champInt
+  
+  # train model
+  fit <- knn3(champInt~.,data=WorldCupRecords2numsFULL)
+  # test model
+  probs <- predict(fit,newdata=test)[,2]
+  diags<-rbind(diags,class_diag(probs,truth,positive=1)) 
+}
+summarize_all(diags,mean)
 ```
 
 Discussion
-
+  *After fitting and running the entire dataset with a non-parametric classifier in k-nearest-neighbors the AUC increases again to 0.9991 showing this is a great model for performing  AUC. A cross-validation was run of the kNN which returned a decreased AUC value at 0.5. Since the AUC decreased this suggests this is a signs of overfitting. Because the AUC is higher for kNN than logisitic regression done earlier the kNN is a better model for AUC. Comparing their cross-validation performance, kNN still returned a higher AUC value.*
 
 ### Regression/Numeric Prediction
 
 ```{R}
 # regression model code here
+#Fit linear regression model and predicting wins from GF and GA
+fit2 <- lm(wins~GF+GA,data=WorldCupRecords2)
+coef(fit2)
+yhat2 <- predict(fit2)
+yhat2
+
+#MSE for the overall dataset
+mean((WorldCupRecords2$wins-yhat2)^2)
 ```
 
 ```{R}
 # cross-validation of regression model here
+#k-fold CV and average MSE
+set.seed(324)
+k=10
+data<-WorldCupRecords2[sample(nrow(WorldCupRecords2)),]
+folds<-cut(seq(1:nrow(WorldCupRecords2)),breaks=k,labels=F)
+diags<-NULL
+for(i in 1:k){
+  train<-data[folds!=i,]
+  test<-data[folds==i,]
+  
+  fit<-lm(wins~GF+GA,data=train)
+  yhat<-predict(fit,newdata=test)
+  diags<-mean((test$wins-yhat2)^2)
+}
+mean(diags)
 ```
 
 Discussion
+*Here I used a linear regression model to predict a numeric variable, wins, using goals for (GF) and goals against (GA). Looking at the prediction portion, goals for and goals against are positive and negative predictors for wins. This model returned a mean squared error of 3.3. After performing a k-fold, k=10, cross-validation the mean squared error increased significantly to 280. Because the MSE is higher in the cross-validation this suggests overfitting.*
 
 ### Python 
 
 ```{R}
 library(reticulate)
+use_python("/usr/bin/python3",required = F)
+
 ```
 
 ```{python}
 # python code here
+print(r.WorldCupRecords2.country)
 ```
 
+
 Discussion
+*Using r. in the python chunk I was able to grab the dataset I have been using for my project in RStudio, WorldCupRecords2, and have returned to me the list of countries who have participated in the FIFA World Cup.*
 
 ### Concluding Remarks
 
